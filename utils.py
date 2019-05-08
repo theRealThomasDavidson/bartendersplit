@@ -17,13 +17,29 @@ def calcHours(individualHours=()):
             TypeError("Hours must be a list or tuple of positive numbers")
 
     if isinstance(individualHours, (float, int)):
-        print(individualHours, individualHours <= 0.)
         if individualHours <= 0.:
             raise TypeError("Hours must be a list or tuple of positive numbers")
         return (individualHours, (1.,))
 
     raise TypeError("Hours must be a list or tuple of positive numbers")
 
+
+def calcPay(individualHours=(),pot=0):
+    """
+    this bit will calculate how much each person takes home before any blanket adds or subs.
+    :param individualHours: a list or tuple of the hours of individual contributors
+    :param pot: the amount of money getting split amoung the people
+    :return: a tuple of the form (float,...) where the floats are the amount of money each person gets for the day
+    """
+
+    if isinstance(pot, (int,float)):
+        if pot < 0.:
+            raise TypeError("The shared money for a day must be a positive number.")
+
+        _, shares = calcHours(individualHours)
+        return tuple([round(pot*x, 2) for x in shares])
+
+    raise TypeError("The shared money for a day must be a positive number.")
 
 def main():
     """
@@ -34,6 +50,7 @@ def main():
     print(calcHours(2.5))
     #print(calcHours((2.5, 5., -7.5)))
     #print(calcHours(-2.5))
+    print(calcPay((2.5, 5., 7.5), 200))
 
 
 if __name__== '__main__':
