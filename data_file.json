@@ -1,1 +1,60 @@
-{}
+{
+  "2019-04-11-Thursday": {
+    "date": "2019-04-11-Thursday",
+    "employees": {
+      "Alice": {
+        "hours": 8.0,
+        "income": 200000.0
+      }
+    },
+    "total tips": 140.0
+  },
+  "2019-05-06-Monday": {
+    "date": "2019-05-06-Monday",
+    "employees": {
+      "Alice": {
+        "hours": 2.0,
+        "income": 45.0
+      },
+      "Carol": {
+        "hours": 7.0,
+        "income": 230.0
+      }
+    },
+    "total tips": 275.0
+  },
+  "2019-05-07-Tuesday": {
+    "date": "2019-05-07-Tuesday",
+    "employees": {
+      "Alice": {
+        "hours": 3.0,
+        "income": 40.0
+      },
+      "Bob": {
+        "hours": 5.0,
+        "income": 50.0
+      }
+    },
+    "total tips": 90.0
+  },
+  "2019-05-09-Thursday": {
+    "date": "2019-05-09-Thursday",
+    "employees": {
+      "Alice": {
+        "hours": 8.0,
+        "income": 140.0
+      }
+    },
+    "total tips": 140.0
+  },
+  "2019-05-11-Saturday": {
+    "date": "2019-05-11-Saturday",
+    "employees": {
+      "Alice": {
+        "hours": 8.0,
+        "income": 200000.0
+      }
+    },
+    "total tips": 140.0
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "Alice": {
+    "Days Worked": {
+      "2019-05-06-Monday": {
+        "hours": 2.0,
+        "income": 45.0
+      },
+      "2019-05-07-Tuesday": {
+        "hours": 3.0,
+        "income": 40.0
+      },
+      "2019-05-09-Thursday": {
+        "hours": 8.0,
+        "income": 140.0
+      }
+    },
+    "Total Hours": 13.0,
+    "Total Pay": 225.0
+  },
+  "Bob": {
+    "Days Worked": {
+      "2019-05-07-Tuesday": {
+        "hours": 5.0,
+        "income": 50.0
+      }
+    },
+    "Total Hours": 5.0,
+    "Total Pay": 50.0
+  },
+  "Carol": {
+    "Days Worked": {
+      "2019-05-06-Monday": {
+        "hours": 7.0,
+        "income": 230.0
+      }
+    },
+    "Total Hours": 7.0,
+    "Total Pay": 230.0
+  }
+}
