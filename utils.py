@@ -1,4 +1,7 @@
+import datetime as dt
+
 def calcHours(individualHours=()):
+    #tested
     """
     adds up all the hours and gives proportion of each
     :param individualHours: a list or tuple of the hours of individual contributors
@@ -25,6 +28,7 @@ def calcHours(individualHours=()):
 
 
 def calcPay(individualHours=(),pot=0):
+    #tested
     """
     this bit will calculate how much each person takes home before any blanket adds or subs.
     :param individualHours: a list or tuple of the hours of individual contributors
@@ -41,16 +45,30 @@ def calcPay(individualHours=(),pot=0):
 
     raise TypeError("The shared money for a day must be a positive number.")
 
+def parseDateStrings(datestring):
+    #lightly tested
+    """
+    needed a parser to handle the keeping dates as strings in json files
+    :param datestring: a string of the form
+    :return: a datetime.date object of the same form
+    """
+    dates=datestring.split("-")
+    return dt.date(int(dates[0]), int(dates[1]), int(dates[2]))
+
+
 def main():
     """
     Used for testing utils. like why are you looking at this?
     :return: None
     """
-    print(calcHours((2.5, 5., 7.5)))
-    print(calcHours(2.5))
+    #print(calcHours((2.5, 5., 7.5)))
+    #print(calcHours(2.5))
     #print(calcHours((2.5, 5., -7.5)))
     #print(calcHours(-2.5))
-    print(calcPay((2.5, 5., 7.5), 200))
+    #print(calcPay((2.5, 5., 7.5), 200))
+    print (dt.date.today()==parseDateStrings(str(dt.date.today())))
+    now = dt.date.today()
+    print(now.strftime("%A"))
 
 
 if __name__== '__main__':
