@@ -3,6 +3,8 @@
 import datetime as dt
 import json
 import utils
+import tkinter as tk
+from tkinter import ttk
 
 
 jsonDataPath = "data_file.json"
@@ -13,7 +15,136 @@ class RepeatError(Exception):
         Exception.__init__(self)
         return
 
+class CalenderFrame:
+    """
+    this is going to be my shitty version of a calender selector widget that I will use for the date selection it should
+     consist of three Labels that say day, month, year, and three combo
+    """
+    def __init__(self, container, row):
+        self.frame = ttk.Frame(container)
+        self.frame.grid(row=row, columnspan=6, padx=5, pady=5)
+        dayLabel=tk.Label(self.frame, text="Day")
+        dayLabel.grid(row=0, column=0, columnspan=1, padx=5, pady=5)
 
+        monthLabel=tk.Label(self.frame, text="Month")
+        monthLabel.grid(row=0, column=1, columnspan=1, padx=5, pady=5)
+
+        yearLabel=tk.Label(self.frame, text="Year")
+        yearLabel.grid(row=0, column=2, columnspan=1, padx=5, pady=5)
+
+        self.weekday = ""
+        self.wdayLabel = tk.Label(self.frame, text=self.weekday)      ##sanity check label to say what weekday it is supposed to be
+        self.wdayLabel.grid(row=1, column=3, columnspan=1, padx=5, pady=5)
+        years = list(range(2016, 2040))
+        self.currYear = tk.StringVar(self.frame)
+        months = (None, "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+        #None is used here because we have to change ordinal datetime months to offsets for the tuple and this was easy enough
+        self.currMonth= tk.StringVar(self.frame)
+        monthOption = tk.OptionMenu(self.frame, self.currMonth, *months, command=lambda x: self.setDays())
+        yearOption = tk.OptionMenu(self.frame, self.currYear, *years,command=lambda x: self.setDays())
+        monthOption.grid(row=1, column=1, padx=5, pady=5)
+        yearOption.grid(row=1, column=2, padx=5, pady=5)
+        yesterday = dt.date.today()-dt.timedelta(days=1)
+        self.currMonthNum = yesterday.month
+        self.currMonth.set(months[self.currMonthNum])
+        self.currYear.set(yesterday.year)
+
+        self.currDay = tk.StringVar(self.frame)
+        self.currDay.set(yesterday.day)
+        self.setDays()
+        self.dayOption.grid(row=1, column=0, padx=5, pady=5)
+
+    def setDays(self):
+        """
+        this will set the current day number and will handle changing the number of days in the month for the month and
+        year provided.
+        :return: this isn't meant to
+        """
+        temp = dt.date(year=int(self.currYear.get()), month=int(self.currMonthNum), day=2)
+        monthDays=(temp.replace(month=temp.month % 12 + 1, day=1) - dt.timedelta(days=1)).day
+        days = list(range(monthDays))
+        self.dayOption = tk.OptionMenu(self.frame, self.currDay, *days)
+        #self.weekDayCheck()
+
+    def weekDayCheck(self):
+        """
+        this is our sanity check that will display a weekday associated with the last selected date.
+        :return: this only displays to the screen and returns None
+        """
+        days=("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+
+        self.weekday = days[dt.date(day=int(self.currDay), month=int(self.currMonth), year=int(self.currYear)).weekday()]
+        self.wdayLabel = tk.Label(self.frame, text=self.weekday)
+        self.wdayLabel.grid(row=1, column=3, columnspan=1, padx=5, pady=5)
+
+
+
+class AutocompleteCombobox(ttk.Combobox):
+    """
+    credit to https://stackoverflow.com/questions/47839813/python-tkinter-autocomplete-combobox-with-like-search
+    stolen with minimal changes and minimal review on june 3 2019
+    """
+
+    def config(self, completion_list):
+        """Use our completion list as our drop down selection menu, arrows move through menu."""
+        self._completion_list = sorted(completion_list, key=str.lower)  # Work with a sorted list
+        self._hits = []
+        self._hit_index = 0
+        self.position = 0
+        self.bind('<KeyRelease>', self.handle_keyrelease)
+        self['values'] = self._completion_list  # Setup our popup menu
+
+    def autocomplete(self, delta=0):
+        """autocomplete the Combobox, delta may be 0/1/-1 to cycle through possible hits"""
+        if delta:  # need to delete selection otherwise we would fix the current position
+            self.delete(self.position, tk.END)
+        else:  # set position to end so selection starts where textentry ended
+            self.position = len(self.get())
+        # collect hits
+        _hits = []
+        for element in self._completion_list:
+            if element.lower().startswith(self.get().lower()):  # Match case insensitively
+                _hits.append(element)
+        # if we have a new hit list, keep this in mind
+        if _hits != self._hits:
+            self._hit_index = 0
+            self._hits = _hits
+        # only allow cycling if we are in a known hit list
+        if _hits == self._hits and self._hits:
+            self._hit_index = (self._hit_index + delta) % len(self._hits)
+        # now finally perform the auto completion
+        if self._hits:
+            self.delete(0, tk.END)
+            self.insert(0, self._hits[self._hit_index])
+            self.select_range(self.position, tk.END)
+
+    def handle_keyrelease(self, event):
+        """event handler for the keyrelease event on this widget"""
+        if event.keysym == "BackSpace":
+            self.delete(self.index(tk.INSERT), tk.END)
+            self.position = self.index(tk.END)
+        if event.keysym == "Left":
+            if self.position < self.index(tk.END):  # delete the selection
+                self.delete(self.position, tk.END)
+            else:
+                self.position = self.position - 1  # delete one character
+                self.delete(self.position, tk.END)
+        if event.keysym == "Right":
+            self.position = self.index(tk.END)  # go to end (no selection)
+        if len(event.keysym) == 1:
+            self.autocomplete()
+        # No need for up/down, we'll jump to the popup
+        # list at the position of the autocompletion
+
+
+def findAllEmployees():
+    """
+    used to get a list of employees that worked before the current date.
+    it uses the periodSummary default case to do it so it can definately be more optimized, but no decision has been
+    made on if the .json should have an employees JavaScript Object that stores a list.
+    :return: a list of all the employees that are in the .json before the current date.
+    """
+    return list(periodSummary(dt.date.today()).keys())
 def addDay(dayinfo, force=False):
     """
     just updates the json file to add a new day to the file
@@ -119,6 +250,9 @@ def main():
     Used for testing objects. like why are you looking at this?
     :return: None
     """
+    findAllEmployees()
+
+    """
 
     a = {"date": dt.date.today(),
         "total tips": 140.,
@@ -175,8 +309,7 @@ def main():
     for key in summary:
         print(key, summary[key])
     return
-    """
-    
+    ##########################
     print(dt.date(2019, 5, 8).weekday())
     delta = dt.timedelta(days=7)
     a=dt.date.today()-delta

@@ -52,7 +52,7 @@ def parseDateStrings(datestring):
     :param datestring: a string of the form
     :return: a datetime.date object of the same form
     """
-    dates=datestring.split("-")
+    dates = datestring.split("-")
     return dt.date(int(dates[0]), int(dates[1]), int(dates[2]))
 
 
