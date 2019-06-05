@@ -32,39 +32,57 @@ class CalenderFrame:
         yearLabel=tk.Label(self.frame, text="Year")
         yearLabel.grid(row=0, column=2, columnspan=1, padx=5, pady=5)
 
-        self.weekday = ""
-        self.wdayLabel = tk.Label(self.frame, text=self.weekday)      ##sanity check label to say what weekday it is supposed to be
+        self.weekday = tk.StringVar()
+        self.wdayLabel = tk.Label(self.frame, textvariable=self.weekday)      ##sanity check label to say what weekday it is supposed to be
+
+        self.weekday.set("thisday")
         self.wdayLabel.grid(row=1, column=3, columnspan=1, padx=5, pady=5)
         years = list(range(2016, 2040))
-        self.currYear = tk.StringVar(self.frame)
-        months = (None, "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+        self.months = (None, "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+        self.days = list(range(1, 32))
         #None is used here because we have to change ordinal datetime months to offsets for the tuple and this was easy enough
         self.currMonth= tk.StringVar(self.frame)
-        monthOption = tk.OptionMenu(self.frame, self.currMonth, *months, command=lambda x: self.setDays())
-        yearOption = tk.OptionMenu(self.frame, self.currYear, *years,command=lambda x: self.setDays())
-        monthOption.grid(row=1, column=1, padx=5, pady=5)
-        yearOption.grid(row=1, column=2, padx=5, pady=5)
+        self.currYear = tk.StringVar(self.frame)
+        self.currDay = tk.StringVar()
         yesterday = dt.date.today()-dt.timedelta(days=1)
         self.currMonthNum = yesterday.month
-        self.currMonth.set(months[self.currMonthNum])
+        self.currMonth.set(self.months[self.currMonthNum])
         self.currYear.set(yesterday.year)
-
-        self.currDay = tk.StringVar(self.frame)
         self.currDay.set(yesterday.day)
-        self.setDays()
+        monthOption = tk.OptionMenu(self.frame, self.currMonth, *self.months, command=lambda x: self.monthUpdate())
+        yearOption = tk.OptionMenu(self.frame, self.currYear, *years, command=lambda x: self.setDays())
+        self.dayOption = tk.OptionMenu(self.frame, self.currDay, *self.days, command=lambda x:self.weekDayCheck())
+        monthOption.grid(row=1, column=1, padx=5, pady=5)
+        yearOption.grid(row=1, column=2, padx=5, pady=5)
         self.dayOption.grid(row=1, column=0, padx=5, pady=5)
+
+        self.setDays()
+
+
+    def monthUpdate(self):
+        """
+        this should update the month num when you select a month then run set days etc.
+        :return: this isn't meant to return anything
+        """
+        if self.currMonth.get()== "None":
+        #this will always retun a string instead of a None Type so I Use "None" instead of None
+            self.currMonth.set("Jan")
+        self.currMonthNum = self.months.index(self.currMonth.get())
+        self.setDays()
 
     def setDays(self):
         """
         this will set the current day number and will handle changing the number of days in the month for the month and
         year provided.
-        :return: this isn't meant to
+        :return: this isn't meant to return shit
         """
         temp = dt.date(year=int(self.currYear.get()), month=int(self.currMonthNum), day=2)
-        monthDays=(temp.replace(month=temp.month % 12 + 1, day=1) - dt.timedelta(days=1)).day
-        days = list(range(monthDays))
-        self.dayOption = tk.OptionMenu(self.frame, self.currDay, *days)
-        #self.weekDayCheck()
+        monthDays = (temp.replace(month=temp.month % 12 + 1, day=1) - dt.timedelta(days=1)).day
+        daylist = self.dayOption["menu"]
+        daylist.delete(0, 'end')
+        for dayNum in range(1,monthDays+1):
+            daylist.add_command(label=dayNum, command=lambda name=dayNum: self.days.set(name))
+        self.weekDayCheck()
 
     def weekDayCheck(self):
         """
@@ -73,10 +91,18 @@ class CalenderFrame:
         """
         days=("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
 
-        self.weekday = days[dt.date(day=int(self.currDay), month=int(self.currMonth), year=int(self.currYear)).weekday()]
-        self.wdayLabel = tk.Label(self.frame, text=self.weekday)
-        self.wdayLabel.grid(row=1, column=3, columnspan=1, padx=5, pady=5)
+        self.weekday.set(days[self.getDate().weekday()])
 
+
+        #self.wdayLabel = tk.Label(self.frame, text=self.weekday)
+        #self.wdayLabel.grid(row=1, column=3, columnspan=1, padx=5, pady=5)
+
+    def getDate(self):
+        """
+        This will return a date time date that corresponds to the current selection on the frames widgets.
+        :return: a datetime.date object that correponds to the currently selected date in the options on the frame
+        """
+        return dt.date(day=int(self.currDay.get()), month=int(self.currMonthNum), year=int(self.currYear.get()))
 
 
 class AutocompleteCombobox(ttk.Combobox):
