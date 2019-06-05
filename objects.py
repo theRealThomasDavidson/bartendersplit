@@ -78,10 +78,10 @@ class CalenderFrame:
         """
         temp = dt.date(year=int(self.currYear.get()), month=int(self.currMonthNum), day=2)
         monthDays = (temp.replace(month=temp.month % 12 + 1, day=1) - dt.timedelta(days=1)).day
-        daylist = self.dayOption["menu"]
-        daylist.delete(0, 'end')
-        for dayNum in range(1,monthDays+1):
-            daylist.add_command(label=dayNum, command=lambda name=dayNum: self.days.set(name))
+        #daylist = self.dayOption["menu"]
+        #daylist.delete(0, 'end')
+        #for dayNum in range(1,monthDays+1):
+        #    daylist.add_command(label=dayNum, command=lambda name=dayNum: self.days.set(name))
         self.weekDayCheck()
 
     def weekDayCheck(self):
