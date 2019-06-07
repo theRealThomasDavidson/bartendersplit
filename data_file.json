@@ -1,4 +1,42 @@
 {
+  "2019-02-14-Thursday": {
+    "date": "2019-02-14-Thursday",
+    "employees": {
+      "Alice": {
+        "hours": 3.0,
+        "income": 106.5
+      },
+      "Bob": {
+        "hours": 15.0,
+        "income": 532.5
+      },
+      "Carol": {
+        "hours": 12.0,
+        "income": 426.0
+      }
+    },
+    "total tips": 1065.0
+  },
+  "2019-04-05-Friday": {
+    "date": "2019-04-05-Friday",
+    "employees": {
+      "h": {
+        "hours": 12.0,
+        "income": 99.0
+      }
+    },
+    "total tips": 99.0
+  },
+  "2019-04-06-Saturday": {
+    "date": "2019-04-06-Saturday",
+    "employees": {
+      "phylis": {
+        "hours": 2.0,
+        "income": 340.0
+      }
+    },
+    "total tips": 340.0
+  },
   "2019-04-11-Thursday": {
     "date": "2019-04-11-Thursday",
     "employees": {
@@ -56,5 +94,63 @@
       }
     },
     "total tips": 140.0
+  },
+  "2019-06-05-Wednesday": {
+    "date": "2019-06-05-Wednesday",
+    "employees": {
+      "": {
+        "hours": 1.0,
+        "income": 0.0
+      },
+      "Alice": {
+        "hours": 7.0,
+        "income": 540.24
+      },
+      "Bob": {
+        "hours": 4.0,
+        "income": 308.71
+      },
+      "Carol": {
+        "hours": 6.0,
+        "income": 463.06
+      },
+      "Thomas": {
+        "hours": 7.0,
+        "income": 899.0
+      },
+      "gladys": {
+        "hours": 1.0,
+        "income": 0.0
+      }
+    },
+    "total tips": 2211.01
+  },
+  "2019-09-02-Monday": {
+    "date": "2019-09-02-Monday",
+    "employees": {
+      "Alice": {
+        "hours": 23.0,
+        "income": 22839.0
+      }
+    },
+    "total tips": 22839.0
+  },
+  "2021-07-16-Friday": {
+    "date": "2021-07-16-Friday",
+    "employees": {
+      "Alice": {
+        "hours": 3.0,
+        "income": 145.23
+      },
+      "Bob": {
+        "hours": 7.0,
+        "income": 338.86
+      },
+      "Phyllis": {
+        "hours": 12.0,
+        "income": 580.91
+      }
+    },
+    "total tips": 1065.0
   }
 }

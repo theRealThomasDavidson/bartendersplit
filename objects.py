@@ -5,6 +5,7 @@ import json
 import utils
 import tkinter as tk
 from tkinter import ttk
+import os
 
 
 jsonDataPath = "data_file.json"
@@ -15,13 +16,15 @@ class RepeatError(Exception):
         Exception.__init__(self)
         return
 
-class CalenderFrame:
+class CalenderFrame(ttk.Frame):
     """
     this is going to be my shitty version of a calender selector widget that I will use for the date selection it should
      consist of three Labels that say day, month, year, and three combo
     """
     def __init__(self, container, row):
+
         self.frame = ttk.Frame(container)
+        self.button = tk.Button(self.frame, command=lambda:self.getDate())
         self.frame.grid(row=row, columnspan=6, padx=5, pady=5)
         dayLabel=tk.Label(self.frame, text="Day")
         dayLabel.grid(row=0, column=0, columnspan=1, padx=5, pady=5)
@@ -37,7 +40,7 @@ class CalenderFrame:
 
         self.weekday.set("thisday")
         self.wdayLabel.grid(row=1, column=3, columnspan=1, padx=5, pady=5)
-        years = list(range(2016, 2040))
+        years = list(range(2016, 2039))
         self.months = (None, "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
         self.days = list(range(1, 32))
         #None is used here because we have to change ordinal datetime months to offsets for the tuple and this was easy enough
@@ -51,7 +54,7 @@ class CalenderFrame:
         self.currDay.set(yesterday.day)
         monthOption = tk.OptionMenu(self.frame, self.currMonth, *self.months, command=lambda x: self.monthUpdate())
         yearOption = tk.OptionMenu(self.frame, self.currYear, *years, command=lambda x: self.setDays())
-        self.dayOption = tk.OptionMenu(self.frame, self.currDay, *self.days, command=lambda x:self.weekDayCheck())
+        self.dayOption = tk.OptionMenu(self.frame, self.currDay, *self.days, command=lambda x: self.weekDayCheck())
         monthOption.grid(row=1, column=1, padx=5, pady=5)
         yearOption.grid(row=1, column=2, padx=5, pady=5)
         self.dayOption.grid(row=1, column=0, padx=5, pady=5)
@@ -78,11 +81,24 @@ class CalenderFrame:
         """
         temp = dt.date(year=int(self.currYear.get()), month=int(self.currMonthNum), day=2)
         monthDays = (temp.replace(month=temp.month % 12 + 1, day=1) - dt.timedelta(days=1)).day
-        #daylist = self.dayOption["menu"]
-        #daylist.delete(0, 'end')
-        #for dayNum in range(1,monthDays+1):
-        #    daylist.add_command(label=dayNum, command=lambda name=dayNum: self.days.set(name))
+        daylist = self.dayOption["menu"]
+
+        #help(type(daylist))
+        daylist.delete(0, 'end')
+        for dayNum in range(1,monthDays+1):
+            self.redundant=dayNum
+            daylist.add_command(label=dayNum, command=lambda x=dayNum:self.FUCKTKINTERINTHEASS(x))
         self.weekDayCheck()
+
+    def FUCKTKINTERINTHEASS(self, selectedOption):
+        """
+        this is redundant bullshit because of the way that this whole thing is built this is completely unneccisary and
+        people who write documentation or answer qurestions about tkinter are bad at thweir jobs
+        :return:
+        """
+        self.currDay.set(selectedOption)
+        self.weekDayCheck()
+
 
     def weekDayCheck(self):
         """
@@ -90,9 +106,11 @@ class CalenderFrame:
         :return: this only displays to the screen and returns None
         """
         days=("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
-
-        self.weekday.set(days[self.getDate().weekday()])
-
+        try:
+            self.weekday.set(days[self.getDate().weekday()])
+        except(ValueError):
+            self.currDay.set(1)
+            self.weekday.set(days[self.getDate().weekday()])
 
         #self.wdayLabel = tk.Label(self.frame, text=self.weekday)
         #self.wdayLabel.grid(row=1, column=3, columnspan=1, padx=5, pady=5)
@@ -171,12 +189,11 @@ def findAllEmployees():
     :return: a list of all the employees that are in the .json before the current date.
     """
     return list(periodSummary(dt.date.today()).keys())
-def addDay(dayinfo, force=False):
+def addDay(dayinfo):
     """
-    just updates the json file to add a new day to the file
+    just updates the json file to add a new employee set to the file
     :param dayinfo:a dictionary of the form {
                                             "date" : object of datetime.date type
-                                            "total tips" : float,
                                             "employees" :
                                                 "name" :{
                                                 "hours" : float ,
@@ -184,7 +201,6 @@ def addDay(dayinfo, force=False):
                                                 }
                                                 ,...
                                             }
-    :param force: this is a boolean that will tell this tyo override the last date that existed if it is there.
     :return: None
     """
     """
@@ -198,11 +214,14 @@ def addDay(dayinfo, force=False):
     dayinfo["date"] = dateString
 
     with open(jsonDataPath, "r") as data:
-        days=json.load(data)
-    if dateString in days and not force:
-        raise RepeatError("Day already in list")
-        return
-    days[dateString] = dayinfo
+        days = json.load(data)
+    if dateString not in days:
+        days[dateString] = {"employees": {}, "date": dateString, "total tips": 0}
+
+    for employee in dayinfo["employees"]:
+        dayinfo["employees"][employee]["income"] = round(dayinfo["employees"][employee]["income"], 2)
+        days[dateString]["total tips"] += dayinfo["employees"][employee]["income"]
+        days[dateString]["employees"][employee] = dayinfo["employees"][employee]
     with open(jsonDataPath, "w") as testjason:
         json.dump(days, testjason, sort_keys=True, indent=2)
     return
@@ -269,6 +288,19 @@ def periodSummary(endDate, startDate=None, lookback=None, employees=None):
                 summary[employee] = temp
 
     return summary
+
+def displayReport(date, lb):
+    """
+    this should call the get report from objects and pop up a window with the report summary
+    :param date: a datetime object that is the end date
+    :param lookback: an int that is the lookback
+    :return: None
+    """
+    jsonReportPath="report_data.json"
+    report = periodSummary(date, lookback=lb)
+    with open(jsonReportPath, "w") as testjason:
+        json.dump(report, testjason, sort_keys=True, indent=4)
+    os.system("notepad "+jsonReportPath)
 
 
 def main():

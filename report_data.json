@@ -1,0 +1,62 @@
+{
+    "": {
+        "Days Worked": {
+            "2019-06-05-Wednesday": {
+                "hours": 1.0,
+                "income": 0.0
+            }
+        },
+        "Total Hours": 1.0,
+        "Total Pay": 0.0
+    },
+    "Alice": {
+        "Days Worked": {
+            "2019-06-05-Wednesday": {
+                "hours": 7.0,
+                "income": 540.24
+            }
+        },
+        "Total Hours": 7.0,
+        "Total Pay": 540.24
+    },
+    "Bob": {
+        "Days Worked": {
+            "2019-06-05-Wednesday": {
+                "hours": 4.0,
+                "income": 308.71
+            }
+        },
+        "Total Hours": 4.0,
+        "Total Pay": 308.71
+    },
+    "Carol": {
+        "Days Worked": {
+            "2019-06-05-Wednesday": {
+                "hours": 6.0,
+                "income": 463.06
+            }
+        },
+        "Total Hours": 6.0,
+        "Total Pay": 463.06
+    },
+    "Thomas": {
+        "Days Worked": {
+            "2019-06-05-Wednesday": {
+                "hours": 7.0,
+                "income": 899.0
+            }
+        },
+        "Total Hours": 7.0,
+        "Total Pay": 899.0
+    },
+    "gladys": {
+        "Days Worked": {
+            "2019-06-05-Wednesday": {
+                "hours": 1.0,
+                "income": 0.0
+            }
+        },
+        "Total Hours": 1.0,
+        "Total Pay": 0.0
+    }
+}

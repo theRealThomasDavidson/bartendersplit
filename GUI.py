@@ -44,7 +44,7 @@ def populateEmployees(comboEmp):
     comboEmp.config(objects.findAllEmployees())
 
 
-def pull_number(numstring):
+def pull_number(numstring,default):
     """
     this is basically what we are going to be using so that we don't have toi parse every number on it's own.
     I want this to throw errors in a rather intuitive way that allows us to easily tell what is needed for proper input
@@ -62,7 +62,7 @@ def pull_number(numstring):
         numbers=list(filter(lambda x: bool(x),numbers))
         howMany = len(numbers)
         if howMany == 0:
-            return 0.
+            return default
         elif howMany > 1:
             raise ValueError("One number was expected, more than one was received.")
         else:
@@ -88,17 +88,26 @@ def pullData(fullwindow, currFrame):
     framesWidgets = currFrame.winfo_children()
 
     textWidgets = list(filter(lambda x: type(x) == tk.Text, framesWidgets))
-    totalCash = pull_number(textWidgets[0].get("1.0", "end-1c")) + pull_number(textWidgets[1].get("1.0", "end-1c"))
-    print("Total Money: "+str(totalCash))
+    totalCash = pull_number(textWidgets[0].get("1.0", "end-1c"), 0.) + pull_number(textWidgets[1].get("1.0", "end-1c"), 0.)
+    frames=list(filter(lambda x: type(x) == ttk.Frame, framesWidgets))
 
-    employeeFrames = filter(lambda x: type(x) == ttk.Frame, framesWidgets)
+    employeeFrames = frames[1:]
+    dateFrame = frames[0]
+    totalHours = 0
+    batchDict = {"date": utils.parseDateStrings(dateFrame.winfo_children()[0].invoke()),
+                 "employees": {}}
     for employee in employeeFrames:
         temp = employee.winfo_children()
-        currName=temp[0].get()
-        currHours=pull_number(temp[1].get("1.0", "end-1c"))
-        print("name: "+currName+" \nHours: "+str(currHours))
+        currName = temp[0].get()
+        currHours = pull_number(temp[1].get("1.0", "end-1c"), 1.)
+        batchDict["employees"][currName]={}
+        totalHours += currHours
+        batchDict["employees"][currName]["hours"] = currHours
+    for employee in batchDict["employees"]:     #here employee is the name in the string i'm just not very creative
+        batchDict["employees"][employee]["income"] = totalCash * (batchDict["employees"][employee]["hours"] / totalHours)
+    objects.addDay(batchDict)
 
-    print("\n\n")
+
 
 def main():
     """
@@ -162,8 +171,22 @@ def main():
     addEmployeeBtn.grid(row=1, column=4, padx=5, pady=5, sticky=tk.W, columnspan=1)
     ###end per employee doc
 
-
     button= tk.Button(frames["inputDays"], text="Log Report", command=lambda: pullData(mainWindow, frames["inputDays"]) )     ##used lambda becasue I can read/modify it easier.
+    button.grid(row=2000, column=1, pady=5, padx=5)
+
+    ###start report page
+    calenderwidget = objects.CalenderFrame(frames["reportPrint"], 3)
+    reportTitle = tk.Label(frames["reportPrint"], text="This page will give reports.")
+    reportTitle.grid(row=1, column=0, pady=5, padx=5, columnspan=4)
+    calenderLabel = tk.Label(frames["reportPrint"], text="This will show the last day included in the report.")
+    calenderLabel.grid(row=2, column=0, pady=5, padx=5, columnspan=4)
+    lookbackLabel = tk.Label(frames["reportPrint"], text="Report length (Days)")
+    lookbackLabel.grid(row=6, column=0, pady=5, padx=5)
+    lookbackText = tk.Text(frames["reportPrint"], height=1, width=6)
+    lookbackText.insert("end","7")
+    lookbackText.grid(row=6, column=3, pady=5, padx=5, sticky=tk.W)
+    lookbackText.bind("<Tab>", focus_next_window)
+    button = tk.Button(frames["reportPrint"], text="Get Report", command=lambda: objects.displayReport(utils.parseDateStrings(frames["reportPrint"].winfo_children()[0].winfo_children()[0].invoke()), int(lookbackText.get("1.0", "end-1c"))))     ##used lambda becasue I can read/modify it easier.
     button.grid(row=2000, column=1, pady=5, padx=5)
 
 
